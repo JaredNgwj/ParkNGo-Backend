@@ -25,19 +25,19 @@ runApp();
 
     
 
-(async () => {
-    console.log("TRYNA GET DATA");
-    const resp = await fetch("https://api.data.gov.sg/v1/transport/carpark-availability?" + new URLSearchParams({
-        "date_time": getFormattedTimestamp()
-    }))
-    const json = (await resp.json())['items'][0]['carpark_data'];
-    for (const obj of json) {
+// (async () => {
+//     console.log("TRYNA GET DATA");
+//     const resp = await fetch("https://api.data.gov.sg/v1/transport/carpark-availability?" + new URLSearchParams({
+//         "date_time": getFormattedTimestamp()
+//     }))
+//     const json = (await resp.json())['items'][0]['carpark_data'];
+//     for (const obj of json) {
 
-        if (obj['carpark_number'] === 'C3M') {
-            console.log(obj);
-        }
-    }
-}) ();
+//         if (obj['carpark_number'] === 'C3M') {
+//             console.log(obj);
+//         }
+//     }
+// }) ();
 
 // (async () => {
 //     console.log("LTA")
