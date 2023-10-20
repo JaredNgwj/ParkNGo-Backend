@@ -17,6 +17,8 @@ The database can then be connected to using the mongodb extension, with the user
 
 To try running the server, run `node index.js`, and if theres no errors there should be a message saying `Server running on http://localhost:3000/`. If you visit http://localhost:3000/, it should say "Hello world".
 
+If it is the first time running, and the database has not been initialised with static carpark data yet, when prompted to initialise static data, select `1`.
+
 To close everything, just end the process on the terminal using ctrl+c, and stop the container in docker dashboard. 
 
 Subsequently, to run everything, just start the container and run the server.
