@@ -10,5 +10,4 @@ router.get('/all', async(req, res) => {
     res.send(await carparkManager.getAllInfo());
 })
 
-
 module.exports = router;
