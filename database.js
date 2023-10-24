@@ -8,6 +8,7 @@ module.exports.connectToDB = async(uri) => {
         db = (await mongoClient.connect(uri)).db("db-mongodb");
         console.log("Connected to DB");
         await initStaticData();
+        await setupDatabase();
     } catch (e) {
         throw e;
     }
@@ -53,9 +54,13 @@ const initStaticData = async () => {
                     collection.insertOne({
                         CarparkID: carpark['CarParkID'],
                         Address: carpark['Development'],
+                        // Coordinates: {
+                        //     Long: coords[1],
+                        //     Lat: coords[0],
+                        // },
                         Coordinates: {
-                            Long: coords[1],
-                            Lat: coords[0],
+                            "type": "Point",
+                            "coordinates": [parseFloat(coords[1]), parseFloat(coords[0])]
                         },
                         CarparkType: carpark['Agency'] + ' Carpark',
                     })
@@ -66,10 +71,15 @@ const initStaticData = async () => {
 
         readline.question("Generate trend?\n1: Yes\n2: No\n", async (ans) => {
             if (ans === '1') {
-                await require('./CarparkManager/searchManager').initialiseTrends();
+                await require('./SearchManager/searchManager').initialiseTrends();
             }
             console.log('Trends generated');
             readline.close();
         });
     });    
 }
+
+const setupDatabase = async () => {
+    const collection = db.collection('carparkInfo');
+    await collection.createIndex({ "Coordinates": "2dsphere" });
+};

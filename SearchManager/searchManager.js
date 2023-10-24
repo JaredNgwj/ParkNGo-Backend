@@ -40,7 +40,7 @@ module.exports.getCarparksByLocation = async (coordinates, radius) => {
     // Use MongoDB's find() method with the query to retrieve nearby car parks
     const nearbyCarparks = await carparkInfoCollection.find(query).toArray();
 
-    return nearbyCarparks;
+    return nearbyCarparks;          // shouldn't this also return availbility data for carpark?
 };
 
 // DID all this, unsure if we want to keep this though:

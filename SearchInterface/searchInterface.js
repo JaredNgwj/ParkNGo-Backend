@@ -60,6 +60,7 @@ router.get('/nearby', async (req, res) => {
         // Send the nearby car parks as the response
         res.json(nearbyCarparks);
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
