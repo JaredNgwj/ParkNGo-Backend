@@ -16,9 +16,9 @@ async function runApp() {
         res.send('Hello world');
     })
     
-    const carparkManager = require("./CarparkInterface/carparkInterface");
+    const searchInterface = require("./SearchInterface/searchInterface");
     
-    app.use('/carpark', carparkManager);
+    app.use('/search', searchInterface);
 }
 
 runApp();

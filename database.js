@@ -66,7 +66,7 @@ const initStaticData = async () => {
 
         readline.question("Generate trend?\n1: Yes\n2: No\n", async (ans) => {
             if (ans === '1') {
-                await require('./CarparkManager/carparkManager').initialiseTrends();
+                await require('./CarparkManager/searchManager').initialiseTrends();
             }
             console.log('Trends generated');
             readline.close();

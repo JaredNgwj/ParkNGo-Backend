@@ -5,6 +5,8 @@ const fs = require('fs');
 const carparkInfoCollection = mongoClient.collection('carparkInfo');
 const carparkTrendCollection = mongoClient.collection('carparkTrend');
 
+//logic to do the function (FINDWHERE ID = XYZ FOR TREND)
+
 module.exports.getAllInfo = async () => {
     return await carparkInfoCollection.find().toArray();
 };
