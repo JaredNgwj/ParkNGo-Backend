@@ -38,9 +38,13 @@ const initStaticData = async () => {
                 collection.insertOne({
                     CarparkID: carpark['car_park_no'],
                     Address: carpark['address'],
+                    // Coordinates: {
+                    //     Long: coord[0],
+                    //     Lat: coord[1]
+                    // },
                     Coordinates: {
-                        Long: coord[0],
-                        Lat: coord[1]
+                        "type": "Point",
+                        "coordinates": [parseFloat(coords[1]), parseFloat(coords[0])]
                     },
                     CarparkType: carpark['car_park_type'],
                     ShortTermParking: carpark['short_term_parking'],
