@@ -32,8 +32,9 @@ const initStaticData = async () => {
             const carparkInfoLTA = (await JSON.parse(ltaCarparks))['value'];
             const collection = db.collection('carparkInfo');
 
+            let coords;
             for (const carpark of carparkInfoHDB) {
-                const coord = proj4("EPSG:3414").inverse([carpark['x_coord'],carpark['y_coord']]);
+                coords = proj4("EPSG:3414").inverse([carpark['x_coord'],carpark['y_coord']]);
 
                 collection.insertOne({
                     CarparkID: carpark['car_park_no'],
@@ -44,14 +45,13 @@ const initStaticData = async () => {
                     // },
                     Coordinates: {
                         "type": "Point",
-                        "coordinates": [parseFloat(coords[1]), parseFloat(coords[0])]
+                        "coordinates": [parseFloat(coords[0]), parseFloat(coords[1])]
                     },
                     CarparkType: carpark['car_park_type'],
                     ShortTermParking: carpark['short_term_parking'],
                     FreeParking: carpark['free_parking'],
                 })
             }
-            let coords;
             for (const carpark of carparkInfoLTA) {
                 if (carpark['Agency'] !== 'HDB') {
                     coords = carpark['Location'].split(' ');
