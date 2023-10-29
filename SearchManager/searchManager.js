@@ -60,7 +60,7 @@ async function fetchCarparkDataLTA() {
             headers: {'AccountKey': process.env.LTA_API_KEY}
         });
         const json = await resp.json();
-        console.log("Full response from LTA:", json);
+        //console.log("Full response from LTA:", json);
         return json; // Return the json data if needed
     } catch (error) {
         console.error("Failed to fetch data from LTA:", error);
@@ -134,27 +134,70 @@ async function helperReturnAvailabilityByCarpardIDs(carparkIDs) {
     return combinedTransformedCarparks;
   }
 
-// Define a function to retrieve nearby car parks
+// // Define a function to retrieve nearby car parks
+// module.exports.getCarparksByLocation = async (coordinates, radius) => {
+//     // Define a query to find car parks within the specified radius
+//     const query = {
+//         Coordinates: {
+//             $nearSphere: {
+//                 $geometry: {
+//                     type: "Point",
+//                     coordinates: [coordinates.Long, coordinates.Lat]
+//                 },
+//                 $maxDistance: radius // Specify the maximum distance in meters
+//             }
+//         }
+//     };
+
+//     // Use MongoDB's find() method with the query to retrieve nearby car parks
+//     const nearbyCarparks = await carparkInfoCollection.find(query).toArray();
+
+//     return nearbyCarparks;
+// };
+
+
 module.exports.getCarparksByLocation = async (coordinates, radius) => {
-    // Define a query to find car parks within the specified radius
-    const query = {
-        Coordinates: {
-            $nearSphere: {
-                $geometry: {
-                    type: "Point",
-                    coordinates: [coordinates.Long, coordinates.Lat]
-                },
-                $maxDistance: radius // Specify the maximum distance in meters
+    try {
+        // Define a query to find car parks within the specified radius
+        const query = {
+            Coordinates: {
+                $nearSphere: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [coordinates.Long, coordinates.Lat]
+                    },
+                    $maxDistance: radius // Specify the maximum distance in meters
+                }
             }
-        }
-    };
+        };
 
-    // Use MongoDB's find() method with the query to retrieve nearby car parks
-    const nearbyCarparks = await carparkInfoCollection.find(query).toArray();
+        // Use MongoDB's find() method with the query to retrieve nearby car parks
+        const nearbyCarparks = await carparkInfoCollection.find(query).toArray();
 
-    return nearbyCarparks;
+        // Extract the CarparkIDs from the nearby car parks
+        const carparkIDs = nearbyCarparks.map(carpark => carpark.CarparkID);
+
+        // Get availability data for the nearby car parks
+        const availabilityData = await helperReturnAvailabilityByCarpardIDs(carparkIDs);
+
+        // Combine the availability data with the carpark info
+        const combinedCarparkData = nearbyCarparks.map(carpark => {
+            const availability = availabilityData.find(a => a.carpark_id === carpark.CarparkID);
+            return {
+                ...carpark, // Spread operator to include all carpark info
+                availability: availability ? {
+                    car: availability.car,
+                    motorcycle: availability.motorcycle
+                } : {
+                    car: { availability: -1, total: -1 }, // Use -1 to indicate unknown availability
+                    motorcycle: { availability: -1, total: -1 } // Use -1 to indicate unknown availability
+                }
+            };
+        });
+
+        return combinedCarparkData;
+    } catch (error) {
+        console.error("Error retrieving car parks by location:", error);
+        throw error;
+    }
 };
-
-// need to also return availbility data for carpark?
-
-//...object //spread operator

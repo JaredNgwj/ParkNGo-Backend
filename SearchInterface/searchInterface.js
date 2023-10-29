@@ -49,8 +49,6 @@ router.get('/nearby', async (req, res) => {
 //create endpoint for fn
 //carparkManager.getAllnearbycarpacrks... and same for gettrendbycarparkid
 
-const searchManager = require('../SearchManager/searchManager');
-
 // Define a new route for retrieving trend data by carpark ID
 router.get('/trend/:carparkID', async (req, res) => {
     try {
