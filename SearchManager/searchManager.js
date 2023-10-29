@@ -153,7 +153,7 @@ const transformedCarparksLTA = filteredCarparksLTA.map(carpark => {
 //     const nearbyCarparks = await carparkInfoCollection.find(query).toArray();
 
 //     return nearbyCarparks;
-// };t
+// };
 
 module.exports.getCarparksByLocation = async (coordinates, radius) => {
     try {
