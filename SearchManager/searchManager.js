@@ -68,8 +68,8 @@ async function fetchCarparkDataLTA() {
     }
 }
 
-//fetchCarparkDataGov();
-//fetchCarparkDataLTA();
+// fetchCarparkDataGov();
+// fetchCarparkDataLTA();
 
 async function helperReturnAvailabilityByCarpardIDs(carparkIDs) {
     // Fetch data from both Gov and LTA sources
@@ -98,7 +98,8 @@ async function helperReturnAvailabilityByCarpardIDs(carparkIDs) {
         if (info.lot_type === 'C') {
           result.car.availability = parseInt(info.lots_available, 10);
           result.car.total = parseInt(info.total_lots, 10);
-        } else if (info.lot_type === 'Y') {
+        }
+         if (info.lot_type === 'Y') {
           result.motorcycle.availability = parseInt(info.lots_available, 10);
           result.motorcycle.total = parseInt(info.total_lots, 10);
         }
@@ -107,24 +108,23 @@ async function helperReturnAvailabilityByCarpardIDs(carparkIDs) {
       return result;
     });
   
-    // Map the filtered carpark data from LTA to the desired structure
-    const transformedCarparksLTA = filteredCarparksLTA.map(carpark => {
-      const result = {
+// Map the filtered carpark data from LTA to the desired structure
+const transformedCarparksLTA = filteredCarparksLTA.map(carpark => {
+    const result = {
         carpark_id: carpark.CarParkID,
-        car: { availability: carpark.AvailableLots, total: carpark.AvailableLots }, // Using AvailableLots for both
-        motorcycle: { availability: 0, total: 0 } // Initialize motorcycle data
-      };
+        car: { availability: 0, total: 0 },
+        motorcycle: { availability: 0, total: 0 }
+    };
   
-      // If the LotType from LTA is for motorcycles, adjust the structure accordingly
-      if (carpark.LotType === 'Y') {
+    if (carpark.LotType === 'C') {
+        result.car.availability = carpark.AvailableLots;
+        result.car.total = carpark.AvailableLots;
+    }
+    if (carpark.LotType === 'Y') {
         result.motorcycle.availability = carpark.AvailableLots;
         result.motorcycle.total = carpark.AvailableLots;
-        // Reset the car availability as this entry is for motorcycles
-        result.car.availability = 0;
-        result.car.total = 0;
-      }
-  
-      return result;
+    }
+    return result;
     });
   
     // Combine the transformed data from both sources
@@ -153,8 +153,7 @@ async function helperReturnAvailabilityByCarpardIDs(carparkIDs) {
 //     const nearbyCarparks = await carparkInfoCollection.find(query).toArray();
 
 //     return nearbyCarparks;
-// };
-
+// };t
 
 module.exports.getCarparksByLocation = async (coordinates, radius) => {
     try {
@@ -181,19 +180,35 @@ module.exports.getCarparksByLocation = async (coordinates, radius) => {
         const availabilityData = await helperReturnAvailabilityByCarpardIDs(carparkIDs);
 
         // Combine the availability data with the carpark info
-        const combinedCarparkData = nearbyCarparks.map(carpark => {
+        // const combinedCarparkData = nearbyCarparks.map(carpark => {
+        //     const availability = availabilityData.find(a => a.carpark_id === carpark.CarparkID);
+        //     return {
+        //         ...carpark, // Spread operator to include all carpark info
+        //         availability: availability ? {
+        //             car: availability.car,
+        //             motorcycle: availability.motorcycle
+        //         } : {
+        //             car: { availability: -1, total: -1 }, // Use -1 to indicate unknown availability
+        //             motorcycle: { availability: -1, total: -1 } // Use -1 to indicate unknown availability
+        //         }
+        //     };
+        // });
+
+        // Combine the availability data with the carpark info
+        // and filter out entries where availability is unknown
+        const combinedCarparkData = nearbyCarparks.reduce((acc, carpark) => {
             const availability = availabilityData.find(a => a.carpark_id === carpark.CarparkID);
-            return {
-                ...carpark, // Spread operator to include all carpark info
-                availability: availability ? {
-                    car: availability.car,
-                    motorcycle: availability.motorcycle
-                } : {
-                    car: { availability: -1, total: -1 }, // Use -1 to indicate unknown availability
-                    motorcycle: { availability: -1, total: -1 } // Use -1 to indicate unknown availability
-                }
-            };
-        });
+            if (availability && (availability.car.availability >= 0 || availability.motorcycle.availability >= 0)) {
+                acc.push({
+                    ...carpark,
+                    availability: {
+                        car: availability.car,
+                        motorcycle: availability.motorcycle
+                    }
+                });
+            }
+            return acc;
+        }, []);
 
         return combinedCarparkData;
     } catch (error) {
