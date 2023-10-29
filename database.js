@@ -52,8 +52,10 @@ const initStaticData = async () => {
                     FreeParking: carpark['free_parking'],
                 })
             }
+            const seen = new Set();
             for (const carpark of carparkInfoLTA) {
-                if (carpark['Agency'] !== 'HDB') {
+                if (carpark['Agency'] !== 'HDB' && !seen.has(carpark['CarParkID'])) {
+                    seen.add(carpark['CarParkID']);
                     coords = carpark['Location'].split(' ');
                     collection.insertOne({
                         CarparkID: carpark['CarParkID'],

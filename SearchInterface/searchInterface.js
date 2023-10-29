@@ -10,25 +10,6 @@ router.get('/all', async(req, res) => {
     res.send(await searchManager.getAllInfo());
 })
 
-/*
-router.get('/nearby', async (req, res) => {
-    // Get the coordinates and radius from the request query parameters
-    const { longitude, latitude, radius } = req.query;
-
-    // Convert the coordinates to numbers
-    const coordinates = {
-        Long: parseFloat(longitude),
-        Lat: parseFloat(latitude)
-    };
-
-    // Call the getCarparksByLocation function to retrieve nearby car parks
-    const nearbyCarparks = await searchManager.getCarparksByLocation(coordinates, parseFloat(radius));
-
-    // Send the nearby car parks as the response
-    res.json(nearbyCarparks);
-});
-*/
-
 // Define a new route for retrieving nearby car parks
 router.get('/nearby', async (req, res) => {
     try {
