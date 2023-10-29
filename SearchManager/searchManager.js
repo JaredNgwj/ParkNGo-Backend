@@ -69,9 +69,9 @@ async function fetchCarparkDataLTA() {
 }
 
 //fetchCarparkDataGov();
-fetchCarparkDataLTA();
+//fetchCarparkDataLTA();
 
-async function helperFunction(carparkIDs) {
+async function helperReturnAvailabilityByCarpardIDs(carparkIDs) {
     // Fetch data from both Gov and LTA sources
     const carparkDataGov = await fetchCarparkDataGov();
     const carparkDataLTA = (await fetchCarparkDataLTA()).value; // Assuming that LTA data is in the 'value' key
@@ -134,8 +134,6 @@ async function helperFunction(carparkIDs) {
     return combinedTransformedCarparks;
   }
 
-//...object //spread operator
-
 // Define a function to retrieve nearby car parks
 module.exports.getCarparksByLocation = async (coordinates, radius) => {
     // Define a query to find car parks within the specified radius
@@ -158,3 +156,5 @@ module.exports.getCarparksByLocation = async (coordinates, radius) => {
 };
 
 // need to also return availbility data for carpark?
+
+//...object //spread operator
