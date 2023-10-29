@@ -7,7 +7,12 @@ const searchManager = require('../SearchManager/searchManager');
  */
 
 router.get('/all', async(req, res) => {
-    res.send(await searchManager.getAllInfo());
+    try {
+        res.send(await searchManager.getAllInfo());
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 })
 
 // Define a new route for retrieving nearby car parks
@@ -65,6 +70,32 @@ router.get('/trend/:carparkID', async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+router.get('/availability', async (req, res) => {
+    try {
+        const { carparkIds } = req.query;
+
+        const availabilityData = await searchManager.getAvailabilityByCarparkIDs(JSON.parse(carparkIds));
+        const result = new Object();
+        let temp;
+
+        for (const carpark of availabilityData) {
+            temp = {...carpark};
+            delete temp['carpark_id'];
+            result[carpark['carpark_id']] = result[carpark['carpark_id']] || {
+                availability: {
+                    ...temp
+                }
+            }
+        }
+
+        res.json(result);
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+})
 
 module.exports = router;
 
