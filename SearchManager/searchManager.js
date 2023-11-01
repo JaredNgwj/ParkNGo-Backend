@@ -216,3 +216,62 @@ module.exports.getCarparksByLocation = async (coordinates, radius) => {
         throw error;
     }
 };
+
+
+// module.exports.getTrendByCarparkID = async (carparkID) => {
+//     try {
+//         // Query the database to get the trend data for the specified carpark ID
+//         const trendData = await carparkTrendCollection.findOne({ CarparkID: carparkID });
+
+//         // Exclude the MongoDB document ID and CarparkID fields from the response
+//         const { _id, CarparkID, ...trends } = trendData;
+
+//         return trends;
+//     } catch (error) {
+//         console.error(error);
+//         throw new Error('Failed to fetch trend data');
+//     }
+// };
+
+//Availability for each lot type, and the total number of lots for each carpark type
+
+module.exports.getTrendByCarparkID = async (carparkID) => {
+    try {
+        // Query the database to get the trend data for the specified carpark ID
+        const trendData = await carparkTrendCollection.findOne({ CarparkID: carparkID });
+
+        // Check if trend data exists for the specified carpark ID
+        if (!trendData) {
+            throw new Error('No trend data available for the specified carpark ID');
+        }
+
+        // Exclude the MongoDB document ID and CarparkID fields from the response
+        const { _id, CarparkID, ...trends } = trendData;
+
+        // Initialize an object to hold the median availability data
+        const medianAvailability = {};
+
+        // Iterate over each day within the trends data
+        for (const day in trends) {
+            medianAvailability[day] = {};
+            // Iterate over each hour within that day
+            for (const hour in trends[day]) {
+                const dataArray = trends[day][hour].C;
+                // Sort the data array in ascending order
+                dataArray.sort((a, b) => a - b);
+                const len = dataArray.length;
+                // Find the median of the sorted data array
+                const median = len % 2 === 0 ?
+                    (parseFloat(dataArray[len / 2 - 1]) + parseFloat(dataArray[len / 2])) / 2 :
+                    parseFloat(dataArray[(len - 1) / 2]);
+                // Store the median value as the availability for that hour
+                medianAvailability[day][hour] = Math.round(median);
+            }
+        }
+
+        return medianAvailability;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to fetch trend data');
+    }
+};
