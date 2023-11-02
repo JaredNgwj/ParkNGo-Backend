@@ -22,7 +22,7 @@ async function runApp() {
 }
 
 runApp();
-    
+
 
 // (async () => {
 //     console.log("TRYNA GET DATA");

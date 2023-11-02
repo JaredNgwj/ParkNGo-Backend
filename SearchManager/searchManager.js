@@ -14,6 +14,7 @@ async function ensureFetchIsImported() {
 
 const carparkInfoCollection = mongoClient.collection('carparkInfo');
 const carparkTrendCollection = mongoClient.collection('carparkTrend');
+const carparkAvailabilityCollection = mongoClient.collection('maxAvail');
 
 //logic to do the function (FINDWHERE ID = XYZ FOR TREND)
 
@@ -22,7 +23,7 @@ module.exports.getAllInfo = async () => {
 };
 
 module.exports.initialiseTrends = async() => {
-    const trends = await JSON.parse(fs.readFileSync('./trends.json'));
+    const trends = await JSON.parse(fs.readFileSync('../config/trends.json'));
     
     for (const carparkId of Object.keys(trends)) {
         carparkTrendCollection.insertOne({
@@ -107,25 +108,27 @@ module.exports.getAvailabilityByCarparkIDs = async (carparkIDs) => {
   
       return result;
     });
-  
-// Map the filtered carpark data from LTA to the desired structure
-const transformedCarparksLTA = filteredCarparksLTA.map(carpark => {
-    const result = {
-        carpark_id: carpark.CarParkID,
-        car: { availability: 0, total: 0 },
-        motorcycle: { availability: 0, total: 0 }
-    };
-  
-    if (carpark.LotType === 'C') {
-        result.car.availability = carpark.AvailableLots;
-        result.car.total = carpark.AvailableLots;
-    }
-    if (carpark.LotType === 'Y') {
-        result.motorcycle.availability = carpark.AvailableLots;
-        result.motorcycle.total = carpark.AvailableLots;
-    }
-    return result;
-    });
+    
+    let availData;
+    // Map the filtered carpark data from LTA to the desired structure
+    const transformedCarparksLTA = await Promise.all(filteredCarparksLTA.map(async carpark => {
+        availData = await carparkAvailabilityCollection.findOne({CarparkID: carpark.CarParkID});
+        const result = {
+            carpark_id: carpark.CarParkID,
+            car: { availability: 0, total: 0 },
+            motorcycle: { availability: 0, total: 0 }
+        };
+    
+        if (carpark.LotType === 'C') {
+            result.car.availability = carpark.AvailableLots;
+            result.car.total = availData.maxCars > carpark.AvailableLots ? availData.maxCars : carpark.AvailableLots;
+        }
+        if (carpark.LotType === 'Y') {
+            result.motorcycle.availability = carpark.AvailableLots;
+            result.motorcycle.total = availData.macMotorcycles > carpark.AvailableLots ? availData.maxMotorcycles : carpark.AvailableLots;
+        }
+        return result;
+        }));
   
     // Combine the transformed data from both sources
     const combinedTransformedCarparks = [...transformedCarparksGov, ...transformedCarparksLTA];

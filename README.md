@@ -15,9 +15,9 @@ If setting up for the first time, run `npm install` to install all the dependenc
 To ensure the database is running properly, open the docker dashboard, and under the "Containers" tab there should be one named "db-mongodb". If the status is not "Running", press the play button to start the container.
 The database can then be connected to using the mongodb extension, with the username and password as `root`.
 
-To try running the server, run `node index.js`, and if theres no errors there should be a message saying `Server running on http://localhost:3000/`. If you visit http://localhost:3000/, it should say "Hello world".
+To initialise the database with the static data for the first time, cd into the config folder and run `node initDB.js`, and select `1` to generate the required data. This process only needs to be done once, or if the collection needs to be dropped and reinitialised.
 
-If it is the first time running, and the database has not been initialised with static carpark data yet, when prompted to initialise static data, select `1`.
+To try running the server, ensure the terminal is at the root folder and run `node index.js`. If theres no errors there should be a message saying `Server running on http://localhost:3000/`. If you visit http://localhost:3000/, it should say "Hello world".
 
 To close everything, just end the process on the terminal using ctrl+c, and stop the container in docker dashboard. 
 
