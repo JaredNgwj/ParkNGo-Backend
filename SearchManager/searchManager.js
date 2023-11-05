@@ -180,8 +180,21 @@ module.exports.getCarparksByLocation = async (coordinates, radius) => {
         const carparkIDs = nearbyCarparks.map(carpark => carpark.CarparkID);
 
         // Get availability data for the nearby car parks
-        const availabilityData = await this.getAvailabilityByCarparkIDs(carparkIDs);
-
+        let availabilityData;
+        try {
+            availabilityData = await this.getAvailabilityByCarparkIDs(carparkIDs);
+        } catch (e) {
+            // If unable to get availability data just return the markers
+            return nearbyCarparks.map(carpark => {
+                return {
+                    ...carpark,
+                    availability: {
+                        car: { availability: 0, total: 0 },
+                        motorcycle: { availability: 0, total: 0 }
+                    }
+                }
+            });
+        }
         // Combine the availability data with the carpark info
         // const combinedCarparkData = nearbyCarparks.map(carpark => {
         //     const availability = availabilityData.find(a => a.carpark_id === carpark.CarparkID);
