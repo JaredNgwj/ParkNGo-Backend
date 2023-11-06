@@ -23,7 +23,12 @@ module.exports.getAllInfo = async () => {
 };
 
 module.exports.initialiseTrends = async() => {
-    const trends = await JSON.parse(fs.readFileSync('../config/trends.json'));
+    const hdb = await JSON.parse(fs.readFileSync('../config/trends.json'));
+    const lta = await JSON.parse(fs.readFileSync('../config/LTATrends.json'));
+    const trends = {
+        ...hdb,
+        ...lta
+    }
     
     for (const carparkId of Object.keys(trends)) {
         carparkTrendCollection.insertOne({
