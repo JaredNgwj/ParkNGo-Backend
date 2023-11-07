@@ -54,23 +54,6 @@ router.get('/nearby', async (req, res) => {
 //create endpoint for fn
 //carparkManager.getAllnearbycarpacrks... and same for gettrendbycarparkid
 
-// Define a new route for retrieving trend data by carpark ID
-router.get('/trend/:carparkID', async (req, res) => {
-    try {
-        // Get the carpark ID from the request parameters
-        const { carparkID } = req.params;
-
-        // Call the getTrendByCarparkID function to retrieve trend data
-        const trendData = await searchManager.getTrendByCarparkID(carparkID);
-
-        // Send the trend data as the response
-        res.json(trendData);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-});
-
 router.get('/availability', async (req, res) => {
     try {
         const { carparkIds } = req.query;
