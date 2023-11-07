@@ -4,6 +4,8 @@ const fs = require('fs');
 const getFormattedTimestamp = require('../timestamp');
 
 let fetch;
+let cachedAvail = null;
+let prevTimestamp = null;
 
 // An asynchronous function to ensure fetch is imported
 async function ensureFetchIsImported() {
@@ -82,18 +84,8 @@ module.exports.getAvailabilityByCarparkIDs = async (carparkIDs) => {
     const carparkDataGov = await fetchCarparkDataGov();
     const carparkDataLTA = (await fetchCarparkDataLTA()).value; // Assuming that LTA data is in the 'value' key
   
-    // Filter carpark data based on carparkIDs for Gov
-    const filteredCarparksGov = carparkDataGov.filter(carpark =>
-      carparkIDs.includes(carpark.carpark_number)
-    );
-  
-    // Filter carpark data based on carparkIDs for LTA
-    const filteredCarparksLTA = carparkDataLTA.filter(carpark =>
-      carparkIDs.includes(carpark.CarParkID)
-    );
-  
     // Map the filtered carpark data from Gov to the desired structure
-    const transformedCarparksGov = filteredCarparksGov.map(carpark => {
+    const transformedCarparksGov = carparkDataGov.map(carpark => {
       const result = {
         carpark_id: carpark.carpark_number,
         car: { availability: 0, total: 0 },
@@ -116,7 +108,7 @@ module.exports.getAvailabilityByCarparkIDs = async (carparkIDs) => {
     
     let availData;
     // Map the filtered carpark data from LTA to the desired structure
-    const transformedCarparksLTA = await Promise.all(filteredCarparksLTA.map(async carpark => {
+    const transformedCarparksLTA = await Promise.all(carparkDataLTA.map(async carpark => {
         availData = await carparkAvailabilityCollection.findOne({CarparkID: carpark.CarParkID});
         const result = {
             carpark_id: carpark.CarParkID,
@@ -135,8 +127,20 @@ module.exports.getAvailabilityByCarparkIDs = async (carparkIDs) => {
         return result;
         }));
   
+
+    // Filter carpark data based on carparkIDs for Gov
+    const filteredCarparksGov = transformedCarparksGov.filter(carpark =>
+        carparkIDs.includes(carpark.carpark_id)
+      );
+    
+    // Filter carpark data based on carparkIDs for LTA
+    const filteredCarparksLTA = transformedCarparksLTA.filter(carpark =>
+        carparkIDs.includes(carpark.carpark_id)
+    );
+
     // Combine the transformed data from both sources
-    const combinedTransformedCarparks = [...transformedCarparksGov, ...transformedCarparksLTA];
+    cachedAvail = [...transformedCarparksGov, ...transformedCarparksLTA];
+    const combinedTransformedCarparks = [...filteredCarparksGov, ...filteredCarparksLTA];
   
     // Return the combined transformed list of carpark data
     return combinedTransformedCarparks;
@@ -185,19 +189,29 @@ module.exports.getCarparksByLocation = async (coordinates, radius) => {
         const carparkIDs = nearbyCarparks.map(carpark => carpark.CarparkID);
 
         // Get availability data for the nearby car parks
+        const now = new Date();
         let availabilityData;
-        try {
-            availabilityData = await this.getAvailabilityByCarparkIDs(carparkIDs);
-        } catch (e) {
-            // If unable to get availability data just return the markers
-            return nearbyCarparks.map(carpark => {
-                return {
-                    ...carpark,
-                    availability: {
-                        car: { availability: 0, total: 0 },
-                        motorcycle: { availability: 0, total: 0 }
+
+        if (!prevTimestamp || !cachedAvail || (now - prevTimestamp) / 1000 > 60) {
+            prevTimestamp = now;
+            try {
+                availabilityData = await this.getAvailabilityByCarparkIDs(carparkIDs);
+            } catch (e) {
+                // If unable to get availability data just return the markers
+                return nearbyCarparks.map(carpark => {
+                    return {
+                        ...carpark,
+                        availability: {
+                            car: { availability: 0, total: 0 },
+                            motorcycle: { availability: 0, total: 0 }
+                        }
                     }
-                }
+                });
+            }
+        } else {
+            console.log('Fetching cached data')
+            availabilityData = cachedAvail.filter(carpark => {
+                return carparkIDs.includes(carpark.carpark_id);
             });
         }
         // Combine the availability data with the carpark info

@@ -380,24 +380,6 @@
       "Agency": "LTA"
     },
     {
-      "CarParkID": "A0007",
-      "Area": "",
-      "Development": "ANGULLIA PARK OFF STREET",
-      "Location": "1.3053280313212745 103.82957069514487",
-      "AvailableLots": 0,
-      "LotType": "Y",
-      "Agency": "URA"
-    },
-    {
-      "CarParkID": "A0007",
-      "Area": "",
-      "Development": "ANGULLIA PARK OFF STREET",
-      "Location": "1.3053280313212745 103.82957069514487",
-      "AvailableLots": 80,
-      "LotType": "C",
-      "Agency": "URA"
-    },
-    {
       "CarParkID": "A0011",
       "Area": "",
       "Development": "ARMENIAN STREET OFF STREET",
