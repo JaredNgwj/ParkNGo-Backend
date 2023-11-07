@@ -4,7 +4,7 @@ const searchManager = require('../TrendManager/trendManager');
 
 
 // Define a new route for retrieving trend data by carpark ID
-router.get('/trend/:carparkID', async (req, res) => {
+router.get('/:carparkID', async (req, res) => {
     try {
         const { carparkID } = req.params;
         const trendData = await searchManager.getTrendByCarparkID(carparkID);
