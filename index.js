@@ -17,8 +17,10 @@ async function runApp() {
     })
     
     const searchInterface = require("./SearchInterface/searchInterface");
+    const trendInterface = require("./TrendInterface/trendInterface");
     
     app.use('/search', searchInterface);
+    app.use('/trend', trendInterface);
 }
 
 runApp();
