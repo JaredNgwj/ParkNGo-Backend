@@ -188,66 +188,65 @@ module.exports.getCarparksByLocation = async (coordinates, radius) => {
         // Extract the CarparkIDs from the nearby car parks
         const carparkIDs = nearbyCarparks.map(carpark => carpark.CarparkID);
 
-        // Get availability data for the nearby car parks
-        const now = new Date();
-        let availabilityData;
-
-        if (!prevTimestamp || !cachedAvail || (now - prevTimestamp) / 1000 > 60) {
-            prevTimestamp = now;
-            try {
-                availabilityData = await this.getAvailabilityByCarparkIDs(carparkIDs);
-            } catch (e) {
-                // If unable to get availability data just return the markers
-                return nearbyCarparks.map(carpark => {
-                    return {
-                        ...carpark,
-                        availability: {
-                            car: { availability: 0, total: 0 },
-                            motorcycle: { availability: 0, total: 0 }
-                        }
-                    }
-                });
-            }
-        } else {
-            console.log('Fetching cached data')
-            availabilityData = cachedAvail.filter(carpark => {
-                return carparkIDs.includes(carpark.carpark_id);
-            });
-        }
-        // Combine the availability data with the carpark info
-        // const combinedCarparkData = nearbyCarparks.map(carpark => {
-        //     const availability = availabilityData.find(a => a.carpark_id === carpark.CarparkID);
-        //     return {
-        //         ...carpark, // Spread operator to include all carpark info
-        //         availability: availability ? {
-        //             car: availability.car,
-        //             motorcycle: availability.motorcycle
-        //         } : {
-        //             car: { availability: -1, total: -1 }, // Use -1 to indicate unknown availability
-        //             motorcycle: { availability: -1, total: -1 } // Use -1 to indicate unknown availability
-        //         }
-        //     };
-        // });
-
-        // Combine the availability data with the carpark info
-        // and filter out entries where availability is unknown
-        const combinedCarparkData = nearbyCarparks.reduce((acc, carpark) => {
-            const availability = availabilityData.find(a => a.carpark_id === carpark.CarparkID);
-            if (availability && (availability.car.availability >= 0 || availability.motorcycle.availability >= 0)) {
-                acc.push({
-                    ...carpark,
-                    availability: {
-                        car: availability.car,
-                        motorcycle: availability.motorcycle
-                    }
-                });
-            }
-            return acc;
-        }, []);
-
-        return combinedCarparkData;
+        return await mergeCarparkAndAvailability(carparkIDs, nearbyCarparks);
     } catch (error) {
         console.error("Error retrieving car parks by location:", error);
+        throw error;
+    }
+};
+
+async function mergeCarparkAndAvailability(carparkIds, carparks) {
+    const now = new Date();
+    let availabilityData;
+
+    if (!prevTimestamp || !cachedAvail || (now - prevTimestamp) / 1000 > 60) {
+        prevTimestamp = now;
+        try {
+            availabilityData = await module.exports.getAvailabilityByCarparkIDs(carparkIds);
+        } catch (e) {
+            // If unable to get availability data just return the markers
+            return carparks.map(carpark => {
+                return {
+                    ...carpark,
+                    availability: {
+                        car: { availability: 0, total: 0 },
+                        motorcycle: { availability: 0, total: 0 }
+                    }
+                }
+            });
+        }
+    } else {
+        console.log('Fetching cached data')
+        availabilityData = cachedAvail.filter(carpark => {
+            return carparkIds.includes(carpark.carpark_id);
+        });
+    }
+
+    const combinedCarparkData = carparks.reduce((acc, carpark) => {
+        const availability = availabilityData.find(a => a.carpark_id === carpark.CarparkID);
+        if (availability && (availability.car.availability >= 0 || availability.motorcycle.availability >= 0)) {
+            acc.push({
+                ...carpark,
+                availability: {
+                    car: availability.car,
+                    motorcycle: availability.motorcycle
+                }
+            });
+        }
+        return acc;
+    }, []);
+
+    return combinedCarparkData;
+}
+
+module.exports.getCarparkInfoByIds = async (carparkIDs) => {
+    try {
+        const carparks = await carparkInfoCollection.find({
+            CarparkID: {$in: carparkIDs}
+        }).toArray();
+        return await mergeCarparkAndAvailability(carparkIDs, carparks);
+    } catch (error) {
+        console.error("Error retrieving car parks by ids:", error);
         throw error;
     }
 };

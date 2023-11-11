@@ -57,20 +57,8 @@ router.get('/nearby', async (req, res) => {
 router.get('/availability', async (req, res) => {
     try {
         const { carparkIds } = req.query;
-
-        const availabilityData = await searchManager.getAvailabilityByCarparkIDs(JSON.parse(carparkIds));
-        const result = new Object();
-        let temp;
-
-        for (const carpark of availabilityData) {
-            temp = {...carpark};
-            delete temp['carpark_id'];
-            result[carpark['carpark_id']] = result[carpark['carpark_id']] || {
-                availability: {
-                    ...temp
-                }
-            }
-        }
+        
+        const result = await searchManager.getCarparkInfoByIds(JSON.parse(carparkIds));
 
         res.json(result);
         
