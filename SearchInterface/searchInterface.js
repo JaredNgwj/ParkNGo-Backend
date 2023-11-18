@@ -31,7 +31,7 @@ router.get('/nearby', async (req, res) => {
         const rad = parseFloat(radius);
 
         // Validate the parsed values
-        if (isNaN(long) || isNaN(lat) || isNaN(rad) || lat < -90 || lat > 90 || long < -180 || long > 180) {
+        if (isNaN(long) || isNaN(lat) || isNaN(rad) || lat < -90 || lat > 90 || long < -180 || long > 180 || rad <= 0) {
             return res.status(400).json({ error: "Invalid longitude, latitude, or radius values." });
         }
 
