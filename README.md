@@ -1,4 +1,7 @@
 <h1 align="center"> :car: ParkN'Go :motorcycle:</h1>
+
+ParkN'Go is a mobile application designed to help drivers find parking spaces effortlessly. Using real-time data from APIs, ParkN'Go provides the latest updates on available car park lots. ParkN'Go provides features such as colour-coded car park location pins on the map, detailed car park information, nearby places around the car park and navigation to desired car park location.
+
 <h2 align = "center"> Table Of Contents </h2>
 
 - [Prerequisites](#prerequisites) <br/>
