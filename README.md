@@ -2,6 +2,8 @@
 
 ParkN'Go is a mobile application designed to help drivers find parking spaces effortlessly. Using real-time data from APIs, ParkN'Go provides the latest updates on available car park lots. ParkN'Go provides features such as colour-coded car park location pins on the map, detailed car park information, nearby places around the car park and navigation to desired car park location.
 
+The demo video can be viewed here: https://youtu.be/9Cs6HPFZbsI
+
 <h2 align = "center"> Table Of Contents </h2>
 
 - [Prerequisites](#prerequisites) <br/>
@@ -23,6 +25,7 @@ ParkN'Go is a mobile application designed to help drivers find parking spaces ef
     
 > Prerequsite API Keys Required
 * LTA API Key
+  + Fill up the form here https://datamall.lta.gov.sg/content/datamall/en/request-for-api.html to receive an API key
 
 <h2 align="center" id = "setup"> :hammer_and_wrench:	Setup</h2>
 
