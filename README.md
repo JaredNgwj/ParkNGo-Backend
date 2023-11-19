@@ -28,8 +28,8 @@
 * Create a file named `.env` in the root folder of the project and copy the contents of the `.env.example` file into it, this will hold your secret API Key and database URI. The database URI has been pre-inserted for ease of use.
 * Paste your private LTA API key where stated in the `.env` file.
 * Open a terminal in the root folder, and run the command `npm install` to install all the dependencies.
-* Using a terminal in the root folder, and run the command `docker compose create` to pull the mongoDB image.
-* Using a terminal in the root folder, and run the command `docker compose start` to start the mongoDB container. The container can be stopped using `docker compose stop`.
+* Using a terminal in the root folder, run the command `docker compose create` to pull the mongoDB image.
+* Using a terminal in the root folder, run the command `docker compose start` to start the mongoDB container. The container can be stopped using `docker compose stop`.
 * If it is the first time setting up, using a terminal in the root folder, run the command `node config/initDB.js` to initialise the database. Accept all the options by entering `1`.
 * To start the server, ensure the mongoDB container is started and initialised, and then using a terminal in the root folder, run the command `node index.js`. If the server starts up successfully, `Server running on http://localhost:3000/` and `Connected to DB` will be printed on the terminal.
 * Ensure the backend server is set up and running successfully before running the frontend.
