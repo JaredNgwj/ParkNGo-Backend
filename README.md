@@ -3,7 +3,6 @@
 
 - [Prerequisites](#prerequisites) <br/>
 - [Setup](#setup) <br/>
-- [Key Features](#key-features) <br/>
 - [Tech Stack](#tech-stack) <br/>
 - [Contributors](#contributors) <br/>
 
