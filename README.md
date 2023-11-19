@@ -15,7 +15,7 @@
 * NodeJS (v18+)
   + Download from https://nodejs.org/en/
 * Docker and Docker Compose CLI
-  + Download docker desktop from https://www.docker.com/products/docker-desktop, it will come with Docker Compose CLI=
+  + Download docker desktop from https://www.docker.com/products/docker-desktop, it will come with Docker Compose CLI
 
     
 > Prerequsite API Keys Required
@@ -25,8 +25,8 @@
 
 >Setup
 
-* Create a file name `.env` in the root folder of the project and copy the contents of the `.env.example` file into it, this will hold your secret API Key and database URI. The database URI has been pre-inserted for ease of use.
-* Paste your private LTA API key where state in the `.env` file.
+* Create a file named `.env` in the root folder of the project and copy the contents of the `.env.example` file into it, this will hold your secret API Key and database URI. The database URI has been pre-inserted for ease of use.
+* Paste your private LTA API key where stated in the `.env` file.
 * Open a terminal in the root folder, and run the command `npm install` to install all the dependencies.
 * Using a terminal in the root folder, and run the command `docker compose create` to pull the mongoDB image.
 * Using a terminal in the root folder, and run the command `docker compose start` to start the mongoDB container. The container can be stopped using `docker compose stop`.
